@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: "CVManagement"
+  datasource:
+    url: jdbc:postgresql://172.23.215.35/cv_management_db
+    username: admin
+    password: admin
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+server:
+  port: 8080
