@@ -2,14 +2,17 @@ package it.giocode.cv_managment.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.giocode.cv_managment.dto.req.candidate.CandidateReqDto;
+import it.giocode.cv_managment.dto.req.candidate.UpdateCandidateReqDto;
 import it.giocode.cv_managment.dto.resp.candidate.CandidateRespDto;
 import it.giocode.cv_managment.dto.resp.cv.CVRespDto;
+import it.giocode.cv_managment.service.TestSecurityConfig;
 import it.giocode.cv_managment.service.iface.ICandidateService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,6 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CandidateController.class)
+@Import(TestSecurityConfig.class)
 public class CandidateControllerTest {
 
     @Autowired
@@ -47,7 +51,7 @@ public class CandidateControllerTest {
                 .name("Name Test")
                 .surname("Surname Test")
                 .age(30)
-                .phoneNumber("+39 340 XXXXXXX")
+                .phoneNumber("+39 340 0539742")
                 .build();
 
         List<CVRespDto> cvRespDtoList = List.of(
@@ -101,7 +105,7 @@ public class CandidateControllerTest {
 
     @Test
     public void updateCandidate_WhenServiceProcessTheUpdateRequest_ShouldReturnStatus200() throws Exception {
-        when(candidateService.updateCandidate(any(Long.class), any(CandidateReqDto.class))).thenReturn(true);
+        when(candidateService.updateCandidate(any(Long.class), any(UpdateCandidateReqDto.class))).thenReturn(true);
 
         String requestJson = objectMapper.writeValueAsString(candidateReqDto);
 
@@ -115,7 +119,7 @@ public class CandidateControllerTest {
 
     @Test
     public void updateCandidate_WhenServiceProcessFailTheUpdateRequest_ShouldReturnStatus500() throws Exception {
-        when(candidateService.updateCandidate(any(Long.class), any(CandidateReqDto.class))).thenReturn(false);
+        when(candidateService.updateCandidate(any(Long.class), any(UpdateCandidateReqDto.class))).thenReturn(false);
 
         String requestJson = objectMapper.writeValueAsString(candidateReqDto);
 

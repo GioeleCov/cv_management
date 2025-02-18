@@ -1,6 +1,7 @@
 package it.giocode.cv_managment.controller;
 
 import it.giocode.cv_managment.dto.req.cv.CVReqDto;
+import it.giocode.cv_managment.dto.req.cv.UpdateCVReqDto;
 import it.giocode.cv_managment.dto.resp.ResponseDto;
 import it.giocode.cv_managment.dto.resp.cv.CVRespDto;
 import it.giocode.cv_managment.service.iface.ICVService;
@@ -51,10 +52,10 @@ public class CVController {
 
     @PutMapping("/cv/update/{cvId}")
     public ResponseEntity<ResponseDto> updateCV(@PathVariable Long cvId,
-            @Valid @RequestBody CVReqDto cvReqDto) {
+            @Valid @RequestBody UpdateCVReqDto updateCVReqDto) {
 
         ResponseDto responseDto;
-        boolean isUpdated = cvService.updateCV(cvId, cvReqDto);
+        boolean isUpdated = cvService.updateCV(cvId, updateCVReqDto);
 
         if (!isUpdated) {
             responseDto = ResponseDto.builder()

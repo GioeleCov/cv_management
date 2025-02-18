@@ -2,13 +2,16 @@ package it.giocode.cv_managment.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.giocode.cv_managment.dto.req.cv.CVReqDto;
+import it.giocode.cv_managment.dto.req.cv.UpdateCVReqDto;
 import it.giocode.cv_managment.dto.resp.cv.CVRespDto;
+import it.giocode.cv_managment.service.TestSecurityConfig;
 import it.giocode.cv_managment.service.iface.ICVService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -22,6 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CVController.class)
+@Import(TestSecurityConfig.class)
 public class CVControllerTest {
 
     @Autowired
@@ -84,7 +88,7 @@ public class CVControllerTest {
 
     @Test
     public void updateCV_WhenServiceProcessTheUpdateRequest_ShouldReturnStatus200() throws Exception {
-        when(cvService.updateCV(any(Long.class), any(CVReqDto.class))).thenReturn(true);
+        when(cvService.updateCV(any(Long.class), any(UpdateCVReqDto.class))).thenReturn(true);
 
         String requestJson = objectMapper.writeValueAsString(cvReqDto);
 
@@ -99,7 +103,7 @@ public class CVControllerTest {
 
     @Test
     public void updateCV_WhenServiceProcessFailTheUpdateRequest_ShouldReturnStatus500() throws Exception {
-        when(cvService.updateCV(any(Long.class), any(CVReqDto.class))).thenReturn(false);
+        when(cvService.updateCV(any(Long.class), any(UpdateCVReqDto.class))).thenReturn(false);
 
         String requestJson = objectMapper.writeValueAsString(cvReqDto);
 

@@ -1,6 +1,7 @@
 package it.giocode.cv_managment.service.impl;
 
 import it.giocode.cv_managment.dto.req.candidate.CandidateReqDto;
+import it.giocode.cv_managment.dto.req.candidate.UpdateCandidateReqDto;
 import it.giocode.cv_managment.dto.resp.candidate.CandidateRespDto;
 import it.giocode.cv_managment.entity.CandidateEntity;
 import it.giocode.cv_managment.entity.UserEntity;
@@ -43,9 +44,11 @@ public class CandidateServiceImpl implements ICandidateService {
     }
 
     @Override
-    public boolean updateCandidate(Long candidateId, CandidateReqDto candidateReqDto) {
+    public boolean updateCandidate(Long candidateId, UpdateCandidateReqDto updateCandidateReqDto) {
         CandidateEntity candidate = candidateRepository.findById(candidateId)
                 .orElseThrow(() -> new NotFoundException("Candidate", "id", candidateId.toString()));
+
+        CandidateReqDto candidateReqDto = CandidateMapper.mapReqDtoToUpdateReqDto(updateCandidateReqDto);
 
         if (checkIfItNeedsUpdating(candidateReqDto, candidate)) {
             candidate.setUpdatedAt(LocalDateTime.now());

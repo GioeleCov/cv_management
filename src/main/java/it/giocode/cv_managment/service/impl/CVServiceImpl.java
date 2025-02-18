@@ -1,6 +1,7 @@
 package it.giocode.cv_managment.service.impl;
 
 import it.giocode.cv_managment.dto.req.cv.CVReqDto;
+import it.giocode.cv_managment.dto.req.cv.UpdateCVReqDto;
 import it.giocode.cv_managment.dto.resp.cv.CVRespDto;
 import it.giocode.cv_managment.entity.CVEntity;
 import it.giocode.cv_managment.entity.CandidateEntity;
@@ -56,11 +57,13 @@ public class CVServiceImpl implements ICVService {
     }
 
     @Override
-    public boolean updateCV(Long cvId, CVReqDto cvReqDto) {
+    public boolean updateCV(Long cvId, UpdateCVReqDto updateCVReqDto) {
         CVEntity cv = cvRepository.findById(cvId)
                 .orElseThrow(() -> new NotFoundException("CV", "id", cvId.toString()));
 
         String path = this.path + cv.getFileName();
+
+        CVReqDto cvReqDto = CVMapper.mapUpdateReqDtoToCVReqDto(updateCVReqDto);
 
         if (checkIfItNeedsUpdating(cv, cvReqDto)) {
 

@@ -1,6 +1,7 @@
 package it.giocode.cv_managment.controller;
 
 import it.giocode.cv_managment.dto.req.candidate.CandidateReqDto;
+import it.giocode.cv_managment.dto.req.candidate.UpdateCandidateReqDto;
 import it.giocode.cv_managment.dto.resp.ResponseDto;
 import it.giocode.cv_managment.dto.resp.candidate.CandidateRespDto;
 import it.giocode.cv_managment.service.iface.ICandidateService;
@@ -45,10 +46,10 @@ public class CandidateController {
 
     @PutMapping("/candidate/update/{candidateId}")
     public ResponseEntity<ResponseDto> updateCandidate(@PathVariable Long candidateId,
-            @Valid @RequestBody CandidateReqDto candidateReqDto) {
+            @Valid @RequestBody UpdateCandidateReqDto updateCandidateReqDto) {
 
         ResponseDto responseDto;
-        boolean isUpdated = candidateService.updateCandidate(candidateId, candidateReqDto);
+        boolean isUpdated = candidateService.updateCandidate(candidateId, updateCandidateReqDto);
 
         if (!isUpdated) {
             responseDto = ResponseDto.builder()

@@ -2,7 +2,9 @@ package it.giocode.cv_managment.controller;
 
 import it.giocode.cv_managment.dto.req.user.UserCreationReqDto;
 import it.giocode.cv_managment.dto.req.user.UserLoginReqDto;
+import it.giocode.cv_managment.dto.resp.LoginRespDto;
 import it.giocode.cv_managment.dto.resp.ResponseDto;
+import it.giocode.cv_managment.exception.exception_class.NotFoundException;
 import it.giocode.cv_managment.service.iface.IUserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -46,22 +48,20 @@ public class UserController {
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<ResponseDto> userLogin(@Valid @RequestBody UserLoginReqDto userLoginReqDto) {
+    public ResponseEntity<LoginRespDto> userLogin(@Valid @RequestBody UserLoginReqDto userLoginReqDto) {
 
-        ResponseDto responseDto;
-        boolean isLogged = userService.userLogin(userLoginReqDto);
+        LoginRespDto responseDto;
 
-        if (!isLogged) {
-            responseDto = ResponseDto.builder()
-                    .statusCode(500)
-                    .message("Something went wrong. Please try later")
-                    .build();
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
+        if (userService.userLogin(userLoginReqDto) == null) {
+            throw new NotFoundException("User", "email", userLoginReqDto.getEmail());
         }
 
-        responseDto = ResponseDto.builder()
+        String token = userService.userLogin(userLoginReqDto);
+
+
+        responseDto = LoginRespDto.builder()
                 .statusCode(200)
+                .token(token)
                 .message("User logged in successfully")
                 .build();
 

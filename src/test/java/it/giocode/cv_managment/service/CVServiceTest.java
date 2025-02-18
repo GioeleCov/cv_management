@@ -1,6 +1,7 @@
 package it.giocode.cv_managment.service;
 
 import it.giocode.cv_managment.dto.req.cv.CVReqDto;
+import it.giocode.cv_managment.dto.req.cv.UpdateCVReqDto;
 import it.giocode.cv_managment.dto.resp.cv.CVRespDto;
 import it.giocode.cv_managment.entity.CVEntity;
 import it.giocode.cv_managment.entity.CandidateEntity;
@@ -117,7 +118,7 @@ public class CVServiceTest {
 
     @Test
     void updateCV_WhenCVWasFoundAndUpdated_ShouldReturnTrue() {
-        CVReqDto updatedCV = CVReqDto.builder()
+        UpdateCVReqDto updatedCV = UpdateCVReqDto.builder()
                         .cvTitle("Updated Title test")
                         .build();
 
@@ -136,10 +137,12 @@ public class CVServiceTest {
 
     @Test
     void updateCV_WhenCVWasNotFound_ShouldThrowNotFoundException() {
+        UpdateCVReqDto updateCVReqDto = UpdateCVReqDto.builder().build();
+
         when(cvRepository.findById(any(Long.class))).thenReturn(Optional.empty());
 
         NotFoundException exception = assertThrows(NotFoundException.class,
-                () -> cvService.updateCV(cv.getCvId(), cvReqDto));
+                () -> cvService.updateCV(cv.getCvId(), updateCVReqDto));
 
         assertEquals("CV not found with id '1'", exception.getMessage());
         verify(cvRepository).findById(cv.getCvId());
@@ -147,7 +150,7 @@ public class CVServiceTest {
 
     @Test
     void updateCV_WhenCVWasFoundAButNotUpdated_ShouldReturnFalse() {
-        CVReqDto updatedCV = CVReqDto.builder()
+        UpdateCVReqDto updatedCV = UpdateCVReqDto.builder()
                 .cvTitle(null)
                 .education(null)
                 .spokenLanguage(null)

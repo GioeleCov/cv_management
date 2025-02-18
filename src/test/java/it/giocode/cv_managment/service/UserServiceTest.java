@@ -5,15 +5,17 @@ import it.giocode.cv_managment.dto.req.user.UserLoginReqDto;
 import it.giocode.cv_managment.entity.UserEntity;
 import it.giocode.cv_managment.exception.exception_class.AlreadyExistsException;
 import it.giocode.cv_managment.exception.exception_class.IncorrectPasswordsException;
-import it.giocode.cv_managment.exception.exception_class.NotFoundException;
 import it.giocode.cv_managment.repository.UserRepository;
 import it.giocode.cv_managment.service.impl.UserServiceImpl;
+import it.giocode.cv_managment.util.JwtUtil;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -27,6 +29,12 @@ public class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private JwtUtil jwtUtil;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -77,23 +85,35 @@ public class UserServiceTest {
     }
 
     @Test
-    void userLogin_WhenUserWasFoundAndPasswordIsCorrect_ShouldReturnTrue() {
-        when(userRepository.findByEmail(userLoginReqDto.getEmail())).thenReturn(Optional.of(user));
+    void userLogin_WhenUserWasFoundAndPasswordIsCorrect_ShouldReturnToken() {
+        String encodedPassword = new BCryptPasswordEncoder().encode(userLoginReqDto.getPassword());
 
-        boolean result = userService.userLogin(userLoginReqDto);
+        UserEntity registeredUser = UserEntity.builder()
+                .email(userLoginReqDto.getEmail())
+                .password(encodedPassword)
+                .build();
 
-        assertTrue(result);
+        when(userRepository.findByEmail(userLoginReqDto.getEmail())).thenReturn(Optional.of(registeredUser));
+
+        String expectedToken = "mockedJwtToken";
+        when(jwtUtil.generateToken(registeredUser.getEmail(), registeredUser.getRole())).thenReturn(expectedToken);
+        when(passwordEncoder.matches(userLoginReqDto.getPassword(), registeredUser.getPassword())).thenReturn(true);
+
+        String result = userService.userLogin(userLoginReqDto);
+
+        assertEquals(expectedToken, result);
+
         verify(userRepository).findByEmail(userLoginReqDto.getEmail());
+        verify(jwtUtil).generateToken(registeredUser.getEmail(), registeredUser.getRole());
     }
 
     @Test
-    void userLogin_WhenUserNotFound_ShouldThrowNotFoundException() {
+    void userLogin_WhenUserNotFound_ShouldReturnNull() {
         when(userRepository.findByEmail(userLoginReqDto.getEmail())).thenReturn(Optional.empty());
 
-        NotFoundException exception =
-                assertThrows(NotFoundException.class, () -> userService.userLogin(userLoginReqDto));
+        String token = userService.userLogin(userLoginReqDto);
 
-        assertEquals("User not found with email 'test@example.com'", exception.getMessage());
+        assertNull(token);
         verify(userRepository).findByEmail(userLoginReqDto.getEmail());
     }
 

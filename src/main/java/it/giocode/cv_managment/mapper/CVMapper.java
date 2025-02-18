@@ -1,6 +1,7 @@
 package it.giocode.cv_managment.mapper;
 
 import it.giocode.cv_managment.dto.req.cv.CVReqDto;
+import it.giocode.cv_managment.dto.req.cv.UpdateCVReqDto;
 import it.giocode.cv_managment.dto.resp.cv.CVRespDto;
 import it.giocode.cv_managment.entity.CVEntity;
 
@@ -33,6 +34,18 @@ public class CVMapper {
                 .experiences(cv.getExperiences())
                 .profileImage(cv.getProfileImage())
                 .fileName(cv.getFileName())
+                .build();
+    }
+
+    public static CVReqDto mapUpdateReqDtoToCVReqDto(UpdateCVReqDto updateCVReqDto) {
+        return CVReqDto.builder()
+                .cvTitle(updateCVReqDto.getCvTitle())
+                .education(updateCVReqDto.getEducation())
+                .spokenLanguage(updateCVReqDto.getSpokenLanguage())
+                .skills(updateCVReqDto.getSkills())
+                .experiences(updateCVReqDto.getExperiences())
+                .profileImage(updateCVReqDto.getProfileImage())
+                .fileName(updateCVReqDto.getFileName())
                 .build();
     }
 }

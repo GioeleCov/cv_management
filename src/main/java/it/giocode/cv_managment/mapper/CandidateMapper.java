@@ -1,6 +1,7 @@
 package it.giocode.cv_managment.mapper;
 
 import it.giocode.cv_managment.dto.req.candidate.CandidateReqDto;
+import it.giocode.cv_managment.dto.req.candidate.UpdateCandidateReqDto;
 import it.giocode.cv_managment.dto.resp.candidate.CandidateRespDto;
 import it.giocode.cv_managment.dto.resp.cv.CVRespDto;
 import it.giocode.cv_managment.entity.CandidateEntity;
@@ -37,6 +38,15 @@ public class CandidateMapper {
                 .age(candidate.getAge())
                 .phoneNumber(candidate.getPhoneNumber())
                 .cvRespDtoList(cvRespDtoList)
+                .build();
+    }
+
+    public static CandidateReqDto mapReqDtoToUpdateReqDto(UpdateCandidateReqDto updateCandidateReqDto) {
+        return CandidateReqDto.builder()
+                .name(updateCandidateReqDto.getName())
+                .surname(updateCandidateReqDto.getSurname())
+                .age(updateCandidateReqDto.getAge())
+                .phoneNumber(updateCandidateReqDto.getPhoneNumber())
                 .build();
     }
 }
