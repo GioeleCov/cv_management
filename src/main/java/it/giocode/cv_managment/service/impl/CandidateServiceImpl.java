@@ -3,18 +3,23 @@ package it.giocode.cv_managment.service.impl;
 import it.giocode.cv_managment.dto.req.candidate.CandidateReqDto;
 import it.giocode.cv_managment.dto.req.candidate.UpdateCandidateReqDto;
 import it.giocode.cv_managment.dto.resp.candidate.CandidateRespDto;
+import it.giocode.cv_managment.entity.CVEntity;
 import it.giocode.cv_managment.entity.CandidateEntity;
 import it.giocode.cv_managment.entity.UserEntity;
 import it.giocode.cv_managment.exception.exception_class.AlreadyExistsException;
 import it.giocode.cv_managment.exception.exception_class.NotFoundException;
 import it.giocode.cv_managment.mapper.CandidateMapper;
+import it.giocode.cv_managment.mapper.UserMapper;
 import it.giocode.cv_managment.repository.CandidateRepository;
 import it.giocode.cv_managment.repository.UserRepository;
 import it.giocode.cv_managment.service.iface.ICandidateService;
 import lombok.AllArgsConstructor;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +31,8 @@ public class CandidateServiceImpl implements ICandidateService {
 
     private final CandidateRepository candidateRepository;
     private final UserRepository userRepository;
+    private final String path = "C://Users//CORSO_JJ06\\Desktop//working_area//projekt2.0//backend//cv-management//src//main//resources//static//cv/";
+
 
     @Override
     public boolean createCandidate(Long userId, CandidateReqDto candidateReqDto) {
@@ -37,6 +44,7 @@ public class CandidateServiceImpl implements ICandidateService {
         }
 
         CandidateEntity candidate = CandidateMapper.mapToCandidateEntity(candidateReqDto);
+        user.setCandidate(candidate);
         candidate.setUser(user);
         candidate.setCreatedAt(LocalDateTime.now());
         candidateRepository.save(candidate);
@@ -63,6 +71,15 @@ public class CandidateServiceImpl implements ICandidateService {
     public boolean deleteCandidate(Long candidateId) {
         CandidateEntity candidate = candidateRepository.findById(candidateId)
                 .orElseThrow(() -> new NotFoundException("Candidate", "id", candidateId.toString()));
+
+        try {
+            for (CVEntity cv : candidate.getCvEntityList()) {
+                Path oldPath = Paths.get(path + cv.getFileName());
+                Files.delete(oldPath);
+            }
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
 
         candidateRepository.delete(candidate);
         return true;
@@ -126,6 +143,22 @@ public class CandidateServiceImpl implements ICandidateService {
         return candidateEntityList.stream()
                 .map(CandidateMapper::mapToCandidateRespDto)
                 .toList();
+    }
+
+    @Override
+    public CandidateRespDto findById(Long candidateId) {
+        CandidateEntity candidate = candidateRepository.findById(candidateId)
+                .orElse(null);
+
+        return CandidateMapper.mapToCandidateRespDto(candidate);
+    }
+
+    @Override
+    public CandidateRespDto findByUserId(Long userId) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User", "id", userId.toString()));
+
+        return CandidateMapper.mapToCandidateRespDto(user.getCandidate());
     }
 
     private boolean checkIfItNeedsUpdating(CandidateReqDto candidateReqDto, CandidateEntity candidate) {

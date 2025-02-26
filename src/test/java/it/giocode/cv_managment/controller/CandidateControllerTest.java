@@ -5,7 +5,9 @@ import it.giocode.cv_managment.dto.req.candidate.CandidateReqDto;
 import it.giocode.cv_managment.dto.req.candidate.UpdateCandidateReqDto;
 import it.giocode.cv_managment.dto.resp.candidate.CandidateRespDto;
 import it.giocode.cv_managment.dto.resp.cv.CVRespDto;
-import it.giocode.cv_managment.service.TestSecurityConfig;
+import it.giocode.cv_managment.entity.UserEntity;
+import it.giocode.cv_managment.repository.UserRepository;
+import it.giocode.cv_managment.config.TestSecurityConfig;
 import it.giocode.cv_managment.service.iface.ICandidateService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -19,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -34,6 +37,9 @@ public class CandidateControllerTest {
 
     @MockitoBean
     private ICandidateService candidateService;
+
+    @MockitoBean
+    private UserRepository userRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -76,17 +82,21 @@ public class CandidateControllerTest {
     @Test
     public void createCandidate_WhenServiceProcessTheCreationRequest_ShouldReturnStatus201() throws Exception {
         when(candidateService.createCandidate(any(Long.class), any(CandidateReqDto.class))).thenReturn(true);
+        when(userRepository.findById(any(Long.class)))
+                .thenReturn(Optional.of(UserEntity.builder().userId(1L).build()));
 
         String requestJson = objectMapper.writeValueAsString(candidateReqDto);
 
         mockMvc.perform(post("/api/candidate/create/{userId}", 1L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestJson))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.statusCode").value(201))
-                .andExpect(jsonPath("$.message").value("Candidate created successfully"));
+                .andExpect(jsonPath("$.message").value("Candidate created successfully"))
+                .andExpect(jsonPath("$.id").value(1L));
     }
+
 
     @Test
     public void createCandidate_WhenServiceProcessFailTheCreationRequest_ShouldReturnStatus500() throws Exception {

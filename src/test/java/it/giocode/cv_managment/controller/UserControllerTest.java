@@ -3,7 +3,7 @@ package it.giocode.cv_managment.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.giocode.cv_managment.dto.req.user.UserCreationReqDto;
 import it.giocode.cv_managment.dto.req.user.UserLoginReqDto;
-import it.giocode.cv_managment.service.TestSecurityConfig;
+import it.giocode.cv_managment.config.TestSecurityConfig;
 import it.giocode.cv_managment.service.iface.IUserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

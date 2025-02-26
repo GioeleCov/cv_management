@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 public class CVRespDto {
 
+    private Long cvId;
     private String cvTitle;
     private String education;
     private String spokenLanguage;

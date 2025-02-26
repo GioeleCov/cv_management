@@ -33,8 +33,10 @@ public class CandidateMapper {
         List<CVRespDto> cvRespDtoList = CandidateMapper.mapToCVRespDtoList(candidate);
 
         return CandidateRespDto.builder()
+                .candidateId(candidate.getCandidateId())
                 .name(candidate.getName())
                 .surname(candidate.getSurname())
+                .email(candidate.getUser().getEmail())
                 .age(candidate.getAge())
                 .phoneNumber(candidate.getPhoneNumber())
                 .cvRespDtoList(cvRespDtoList)

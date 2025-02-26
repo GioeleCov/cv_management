@@ -1,5 +1,6 @@
 package it.giocode.cv_managment.filter;
 
+import it.giocode.cv_managment.model.UserPrincipal;
 import it.giocode.cv_managment.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -36,15 +37,19 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             String token = authorizationHeader.substring(7);
             String username = jwtUtil.validationToken(token);
             String role = jwtUtil.getRoleFromToken(token);
+            Long userId = jwtUtil.getUserIdFromToken(token);
 
             System.out.println("Token: " + token);
             System.out.println("Username: " + username);
             System.out.println("Role: " + role);
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserPrincipal userPrincipal = new UserPrincipal(userId, username); // 🔥 Creiamo il principal personalizzato
+
                 UsernamePasswordAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(username, null, List.of(() -> "ROLE_" + role));
+                        new UsernamePasswordAuthenticationToken(userPrincipal, null, List.of(() -> "ROLE_" + role));
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         }

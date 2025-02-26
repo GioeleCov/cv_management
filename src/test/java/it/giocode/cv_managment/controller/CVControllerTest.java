@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.giocode.cv_managment.dto.req.cv.CVReqDto;
 import it.giocode.cv_managment.dto.req.cv.UpdateCVReqDto;
 import it.giocode.cv_managment.dto.resp.cv.CVRespDto;
-import it.giocode.cv_managment.service.TestSecurityConfig;
+import it.giocode.cv_managment.config.TestSecurityConfig;
 import it.giocode.cv_managment.service.iface.ICVService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

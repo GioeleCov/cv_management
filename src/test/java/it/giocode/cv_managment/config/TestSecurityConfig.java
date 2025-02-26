@@ -1,4 +1,4 @@
-package it.giocode.cv_managment.service;
+package it.giocode.cv_managment.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

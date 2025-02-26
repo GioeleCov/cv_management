@@ -12,8 +12,10 @@ import java.util.List;
 @Setter
 public class CandidateRespDto {
 
+    private Long candidateId;
     private String name;
     private String surname;
+    private String email;
     private Integer age;
     private String phoneNumber;
     private List<CVRespDto> cvRespDtoList;

@@ -89,6 +89,7 @@ public class UserServiceTest {
         String encodedPassword = new BCryptPasswordEncoder().encode(userLoginReqDto.getPassword());
 
         UserEntity registeredUser = UserEntity.builder()
+                .userId(1L)
                 .email(userLoginReqDto.getEmail())
                 .password(encodedPassword)
                 .build();
@@ -96,7 +97,7 @@ public class UserServiceTest {
         when(userRepository.findByEmail(userLoginReqDto.getEmail())).thenReturn(Optional.of(registeredUser));
 
         String expectedToken = "mockedJwtToken";
-        when(jwtUtil.generateToken(registeredUser.getEmail(), registeredUser.getRole())).thenReturn(expectedToken);
+        when(jwtUtil.generateToken(registeredUser.getEmail(), registeredUser.getUserId(), registeredUser.getRole())).thenReturn(expectedToken);
         when(passwordEncoder.matches(userLoginReqDto.getPassword(), registeredUser.getPassword())).thenReturn(true);
 
         String result = userService.userLogin(userLoginReqDto);
@@ -104,7 +105,7 @@ public class UserServiceTest {
         assertEquals(expectedToken, result);
 
         verify(userRepository).findByEmail(userLoginReqDto.getEmail());
-        verify(jwtUtil).generateToken(registeredUser.getEmail(), registeredUser.getRole());
+        verify(jwtUtil).generateToken(registeredUser.getEmail(), registeredUser.getUserId(), registeredUser.getRole());
     }
 
     @Test

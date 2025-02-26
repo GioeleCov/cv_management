@@ -27,6 +27,7 @@ public class CVMapper {
 
     public static CVRespDto mapToCVRespDto(CVEntity cv) {
         return CVRespDto.builder()
+                .cvId(cv.getCvId())
                 .cvTitle(cv.getCvTitle())
                 .education(cv.getEducation())
                 .spokenLanguage(cv.getSpokenLanguage())

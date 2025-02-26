@@ -44,7 +44,7 @@ public class UserServiceImpl implements IUserService {
             throw new IncorrectPasswordsException();
         }
 
-        return user != null ? jwtUtil.generateToken(user.getEmail(), user.getRole()) : null;
+        return user != null ? jwtUtil.generateToken(user.getEmail(), user.getUserId(), user.getRole()) : null;
     }
 
     private void setUserRole(UserCreationReqDto userCreationReqDto, UserEntity user) {

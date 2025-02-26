@@ -34,8 +34,7 @@ public class CVServiceImpl implements ICVService {
     private final CVRepository cvRepository;
     private final CandidateRepository candidateRepository;
     private final PdfService pdfService;
-    private final String path = "C://Users//CORSO_JJ06//Desktop//working_area//projekt2.0//backend//" +
-            "cv-management//src//main//resources//static//";
+    private final String path = "C://Users//CORSO_JJ06\\Desktop//working_area//projekt2.0//backend//cv-management//src//main//resources//static//cv/";
 
     @Override
     public boolean createCV(Long candidateId, CVReqDto cvReqDto) {
@@ -50,6 +49,7 @@ public class CVServiceImpl implements ICVService {
         CVEntity cv = CVMapper.mapToCVEntity(cvReqDto);
         cv.setCandidate(candidate);
         candidate.getCvEntityList().add(cv);
+
         cv.setCreatedAt(LocalDateTime.now());
         pdfService.generatePdf(candidate, cv, path);
         cvRepository.save(cv);
@@ -61,26 +61,25 @@ public class CVServiceImpl implements ICVService {
         CVEntity cv = cvRepository.findById(cvId)
                 .orElseThrow(() -> new NotFoundException("CV", "id", cvId.toString()));
 
-        String path = this.path + cv.getFileName();
-
         CVReqDto cvReqDto = CVMapper.mapUpdateReqDtoToCVReqDto(updateCVReqDto);
 
-        if (checkIfItNeedsUpdating(cv, cvReqDto)) {
+        boolean updated = checkIfItNeedsUpdating(cv, cvReqDto);
+
+        if (updated) {
+            cv.setUpdatedAt(LocalDateTime.now());
+            String oldFilePath = Paths.get(this.path, cv.getFileName() + ".pdf").toString();
 
             try {
-                Path oldPath = Paths.get(path);
-                Files.delete(oldPath);
-            }catch (IOException e) {
+                Files.deleteIfExists(Paths.get(oldFilePath));
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            cv.setUpdatedAt(LocalDateTime.now());
             pdfService.generatePdf(cv.getCandidate(), cv, path);
             cvRepository.save(cv);
-            return true;
         }
 
-        return false;
+        return updated;
     }
 
     @Override
@@ -122,7 +121,7 @@ public class CVServiceImpl implements ICVService {
     public Resource downloadCV(String fileName) {
 
         try {
-            String filePath = this.path + fileName + ".pdf";
+            String filePath = this.path + fileName;
             Path path = Paths.get(filePath);
             File file = path.toFile();
 

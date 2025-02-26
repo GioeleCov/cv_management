@@ -33,7 +33,7 @@ public class CandidateEntity {
     private String phoneNumber;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "utente_id")
+    @JoinColumn(name = "utente_id", unique = true)
     private UserEntity user;
 
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL, orphanRemoval = true)

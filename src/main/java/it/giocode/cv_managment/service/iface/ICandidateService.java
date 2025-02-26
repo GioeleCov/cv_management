@@ -15,4 +15,6 @@ public interface ICandidateService {
     List<CandidateRespDto> findAll();
     List<CandidateRespDto> findByExperiences(String experiences);
     List<CandidateRespDto> findBySkills(String skills);
+    CandidateRespDto findById(Long candidateId);
+    CandidateRespDto findByUserId(Long userId);
 }

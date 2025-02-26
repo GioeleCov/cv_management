@@ -27,7 +27,7 @@ public class CVController {
     private final ICVService cvService;
 
     @PostMapping("/cv/create/{candidateId}")
-    public ResponseEntity<ResponseDto> createCandidate(@PathVariable Long candidateId,
+    public ResponseEntity<ResponseDto> createCV(@PathVariable Long candidateId,
             @Valid @RequestBody CVReqDto cvReqDto) {
 
         ResponseDto responseDto;

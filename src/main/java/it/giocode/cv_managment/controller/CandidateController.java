@@ -4,6 +4,8 @@ import it.giocode.cv_managment.dto.req.candidate.CandidateReqDto;
 import it.giocode.cv_managment.dto.req.candidate.UpdateCandidateReqDto;
 import it.giocode.cv_managment.dto.resp.ResponseDto;
 import it.giocode.cv_managment.dto.resp.candidate.CandidateRespDto;
+import it.giocode.cv_managment.entity.UserEntity;
+import it.giocode.cv_managment.repository.UserRepository;
 import it.giocode.cv_managment.service.iface.ICandidateService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -19,30 +21,42 @@ import java.util.List;
 public class CandidateController {
 
     private final ICandidateService candidateService;
+    private final UserRepository userRepository;
 
     @PostMapping("/candidate/create/{userId}")
     public ResponseEntity<ResponseDto> createCandidate(@PathVariable Long userId,
             @Valid @RequestBody CandidateReqDto candidateReqDto) {
 
-        ResponseDto responseDto;
         boolean isCreated = candidateService.createCandidate(userId, candidateReqDto);
 
         if (!isCreated) {
-            responseDto = ResponseDto.builder()
+            ResponseDto responseDto = ResponseDto.builder()
                     .statusCode(500)
                     .message("Something went wrong. Please try later")
                     .build();
-
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
         }
 
-        responseDto = ResponseDto.builder()
+        UserEntity user = userRepository.findById(userId)
+                .orElse(null);
+
+        if (user == null) {
+            ResponseDto responseDto = ResponseDto.builder()
+                    .statusCode(404)
+                    .message("User not found")
+                    .build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDto);
+        }
+
+        ResponseDto responseDto = ResponseDto.builder()
                 .statusCode(201)
                 .message("Candidate created successfully")
+                .id(user.getUserId())
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
+
 
     @PutMapping("/candidate/update/{candidateId}")
     public ResponseEntity<ResponseDto> updateCandidate(@PathVariable Long candidateId,
@@ -63,6 +77,7 @@ public class CandidateController {
         responseDto = ResponseDto.builder()
                 .statusCode(200)
                 .message("Candidate updated successfully")
+                .id(candidateId)
                 .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
@@ -89,6 +104,13 @@ public class CandidateController {
                 .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
+
+    @GetMapping("/candidate/byId/{candidateId}")
+    public ResponseEntity<CandidateRespDto> getCandidateById(@PathVariable Long candidateId) {
+        CandidateRespDto candidateRespDto = candidateService.findById(candidateId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(candidateRespDto);
     }
 
     @GetMapping("/candidates")
@@ -141,5 +163,12 @@ public class CandidateController {
 
 
         return ResponseEntity.ok(candidateRespDtoList);
+    }
+
+    @GetMapping("/candidate/byUserId/{userId}")
+    public ResponseEntity<CandidateRespDto> getCandidateByUserId(@PathVariable Long userId) {
+        CandidateRespDto candidateRespDto = candidateService.findByUserId(userId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(candidateRespDto);
     }
 }
